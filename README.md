@@ -23,23 +23,18 @@ FlowOS follows a modular, scalable architecture:
 
 ### Installation
 
-1. Clone the repository and navigate to the project directory:
-   ```bash
-   cd flowos
-   ```
-
-2. Create a virtual environment and activate it:
+1. Create a virtual environment and activate it:
    ```bash
    python -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
 
-3. Install dependencies:
+2. Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
 
-4. Set up environment variables:
+3. Set up environment variables:
    ```bash
    cp .env.example .env
    # Edit .env and add your GOOGLE_API_KEY
