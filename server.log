@@ -1,8 +1,70 @@
-INFO:     Started server process [40396]
+INFO:     Started server process [46796]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-INFO:     127.0.0.1:52124 - "GET /logs?limit=10 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52124 - "GET /logs?limit=10 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52124 - "GET /logs?limit=10 HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52124 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+[Backend] FlowOS is starting up...
+INFO:     127.0.0.1:52687 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52687 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52689 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52689 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52689 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52689 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52689 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+[OAuth] Login initiated...
+[OAuth] Creating Google Auth Flow...
+INFO:     127.0.0.1:52689 - "GET /auth/login HTTP/1.1" 200 OK
+[OAuth] Callback received, fetching token...
+[OAuth] Creating Google Auth Flow...
+[OAuth] Saving token for default_user@example.com...
+[OAuth] Token saved to database.
+[OAuth] Token fetched and saved successfully for default_user@example.com
+INFO:     127.0.0.1:52695 - "GET /auth/callback?state=yQIHBfKwrhI6xZpZ37DRgAodzzQCO3&iss=https://accounts.google.com&code=4/0AfrIepBcl8XeJQ4a8I7nGNfH_1c-rtkbooKtD4MwrslqufEu1Gzn9fuTgvMmrmlTvxVYmQ&scope=https://www.googleapis.com/auth/calendar.events HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:52700 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52700 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52700 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52700 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52700 - "OPTIONS /ask HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52700 - "POST /ask HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52702 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52700 - "OPTIONS /execute HTTP/1.1" 200 OK
+[OAuth] Loading token for default_user@example.com...
+[Calendar] Attempting to create event: Vantage Meeting at 2026-03-25T19:00:00
+[Calendar] Event created successfully: https://www.google.com/calendar/event?eid=YWVvYTJqc2Y5Z25ucGUwZGFsMW05ZnN1bjQgeWFzaC5ndXB0YTI5MDMyMDA2QG0
+INFO:     127.0.0.1:52702 - "POST /execute HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52700 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52700 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52700 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52700 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52700 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52700 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52700 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52700 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52700 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52700 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52700 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52710 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52710 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52710 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52710 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52710 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52710 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52710 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52710 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52710 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52710 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52710 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52710 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52710 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52718 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52718 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52718 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52718 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52729 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52729 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52729 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52729 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52731 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52731 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52731 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52731 - "GET /logs?limit=10 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52731 - "GET /logs?limit=10 HTTP/1.1" 200 OK

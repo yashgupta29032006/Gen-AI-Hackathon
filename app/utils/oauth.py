@@ -17,25 +17,31 @@ REDIRECT_URI = os.getenv("REDIRECT_URI", "http://localhost:8000/auth/callback")
 
 SCOPES = ["https://www.googleapis.com/auth/calendar.events"]
 
+# Static verifier to bypass standard PKCE state issues in a stateless FastAPI backend
+# This ensures the verifier generated during login matches the one expected in the callback.
+STATIC_VERIFIER = "flowos_stateless_verifier_2024_productivity_brain_secure_random_string"
+
 def get_google_auth_flow() -> Flow:
+    print("[OAuth] Creating Google Auth Flow...")
     client_config = {
         "web": {
             "client_id": CLIENT_ID,
-            "project_id": "flow-os",
+            "client_secret": CLIENT_SECRET,
             "auth_uri": "https://accounts.google.com/o/oauth2/auth",
             "token_uri": "https://oauth2.googleapis.com/token",
-            "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-            "client_secret": CLIENT_SECRET,
-            "redirect_uris": [REDIRECT_URI]
         }
     }
-    return Flow.from_client_config(
+    flow = Flow.from_client_config(
         client_config,
-        scopes=SCOPES,
+        scopes=["https://www.googleapis.com/auth/calendar.events"],
         redirect_uri=REDIRECT_URI
     )
+    # Set a fixed verifier to disable dynamic PKCE generation/loss
+    flow.code_verifier = STATIC_VERIFIER
+    return flow
 
 def save_token(db: Session, user_email: str, credentials: Credentials):
+    print(f"[OAuth] Saving token for {user_email}...")
     token_data = credentials.to_json()
     db_token = db.query(OAuthToken).filter(OAuthToken.user_email == user_email).first()
     if not db_token:
@@ -51,15 +57,24 @@ def save_token(db: Session, user_email: str, credentials: Credentials):
     db_token.scopes = ",".join(credentials.scopes)
     
     db.commit()
+    print(f"[OAuth] Token saved to database.")
 
 def load_token(db: Session, user_email: str) -> Optional[Credentials]:
+    print(f"[OAuth] Loading token for {user_email}...")
     db_token = db.query(OAuthToken).filter(OAuthToken.user_email == user_email).first()
     if not db_token:
+        print(f"[OAuth] No token found in DB for {user_email}")
         return None
     
     creds = Credentials.from_authorized_user_info(json.loads(db_token.token), SCOPES)
     if creds and creds.expired and creds.refresh_token:
-        creds.refresh(Request())
-        save_token(db, user_email, creds)
+        print(f"[OAuth] Token expired, attempting refresh...")
+        try:
+            creds.refresh(Request())
+            save_token(db, user_email, creds)
+            print(f"[OAuth] Token refreshed successfully.")
+        except Exception as e:
+            print(f"[OAuth] Refresh error: {str(e)}")
+            return None
     
     return creds

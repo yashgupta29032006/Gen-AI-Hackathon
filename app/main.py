@@ -10,17 +10,33 @@ from app.core.workflow import WorkflowEngine
 from app.agents.tool_agent import ToolAgent
 from app.api.auth import router as auth_router
 import uvicorn
+import os
+from dotenv import load_dotenv
+
+# Load environment variables explicitly
+load_dotenv()
+
+# For local development with HTTP/Google OAuth
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 app = FastAPI(title="FlowOS - Multi-Agent Productivity Brain")
 
 # CORS Configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"], # Allow all for local development/port variability
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.on_event("startup")
+async def startup_event():
+    print("[Backend] FlowOS is starting up...")
+    required_vars = ["GOOGLE_API_KEY", "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET"]
+    for var in required_vars:
+        if not os.getenv(var):
+            print(f"[ERROR] Missing required environment variable: {var}")
 
 # Include routers
 app.include_router(auth_router)

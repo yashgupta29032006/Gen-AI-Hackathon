@@ -12,22 +12,28 @@ class GoogleCalendarService:
         Creates a real Google Calendar event.
         Expects ISO format strings for start_time and end_time.
         """
-        event = {
-            'summary': summary,
-            'description': description,
-            'start': {
-                'dateTime': start_time,
-                'timeZone': 'UTC',
-            },
-            'end': {
-                'dateTime': end_time,
-                'timeZone': 'UTC',
-            },
-        }
+        try:
+            print(f"[Calendar] Attempting to create event: {summary} at {start_time}")
+            event = {
+                'summary': summary,
+                'description': description,
+                'start': {
+                    'dateTime': start_time,
+                    'timeZone': 'UTC',
+                },
+                'end': {
+                    'dateTime': end_time,
+                    'timeZone': 'UTC',
+                },
+            }
 
-        created_event = self.service.events().insert(calendarId='primary', body=event).execute()
-        return {
-            "id": created_event.get("id"),
-            "html_link": created_event.get("htmlLink"),
-            "status": "created_on_google_calendar"
-        }
+            created_event = self.service.events().insert(calendarId='primary', body=event).execute()
+            print(f"[Calendar] Event created successfully: {created_event.get('htmlLink')}")
+            return {
+                "id": created_event.get("id"),
+                "html_link": created_event.get("htmlLink"),
+                "status": "created_on_google_calendar"
+            }
+        except Exception as e:
+            print(f"[Calendar] Error creating event: {str(e)}")
+            raise e

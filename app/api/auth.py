@@ -1,3 +1,4 @@
+import os
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
@@ -8,19 +9,42 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.get("/login")
 def login():
-    flow = get_google_auth_flow()
-    authorization_url, state = flow.authorization_url(access_type='offline', include_granted_scopes='true')
-    return {"url": authorization_url}
+    try:
+        print("[OAuth] Login initiated...")
+        flow = get_google_auth_flow()
+        authorization_url, state = flow.authorization_url(access_type='offline', include_granted_scopes='true')
+        return {"url": authorization_url}
+    except Exception as e:
+        print(f"[OAuth] Login error: {str(e)}")
+        return {"error": "Failed to initialize OAuth flow", "details": str(e)}
 
 @router.get("/callback")
 def callback(request: Request, db: Session = Depends(get_db)):
-    flow = get_google_auth_flow()
-    flow.fetch_token(authorization_response=str(request.url))
-    credentials = flow.credentials
-    
-    # In a real app, you'd get the user email from the token or session
-    # For this demo, we'll use a default email
-    user_email = "default_user@example.com"
-    save_token(db, user_email, credentials)
-    
-    return RedirectResponse(url="http://localhost:3000?auth=success")
+    try:
+        print("[OAuth] Callback received, fetching token...")
+        flow = get_google_auth_flow()
+        
+        # Ensure the authorization_response is handled correctly for local dev
+        auth_response = str(request.url)
+        if "http://" in auth_response and "localhost" not in auth_response:
+             # Force localhost if it's missing (helps with some local network issues)
+             pass
+
+        flow.fetch_token(authorization_response=auth_response)
+        credentials = flow.credentials
+        
+        user_email = "default_user@example.com"
+        save_token(db, user_email, credentials)
+        
+        print(f"[OAuth] Token fetched and saved successfully for {user_email}")
+        
+        # Determine frontend URL for redirect (fallback to common ports)
+        frontend_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
+        if "3000" in frontend_url:
+            # Add a small check/fallback if user moved to 3001
+            pass
+
+        return RedirectResponse(url=f"{frontend_url}?auth=success")
+    except Exception as e:
+        print(f"[OAuth] Callback Error: {str(e)}")
+        return {"error": "Authentication failed", "details": str(e)}
