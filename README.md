@@ -53,6 +53,35 @@ uvicorn app.main:app --reload
 - `GET /tasks`: List all tasks.
 - `POST /execute`: Manually trigger a workflow step.
 - `GET /logs`: Retrieve system execution logs.
+- `GET /auth/login`: Initialize Google OAuth flow.
+
+## 🎨 Frontend (Next.js)
+
+The project now includes a modern dashboard built with Next.js and Tailwind CSS.
+
+### Setup Frontend
+1. Navigate to the frontend directory: `cd frontend`
+2. Install dependencies: `npm install`
+3. Run the development server: `npm run dev`
+4. Access the UI at `http://localhost:3000`.
+
+## 🔗 Google Calendar Integration
+
+FlowOS can now schedule real events on your Google Calendar.
+
+### Prerequisites
+1. Create a project in the [Google Cloud Console](https://console.cloud.google.com/).
+2. Enable the **Google Calendar API**.
+3. Create **OAuth 2.0 Client IDs** (Web application).
+4. Add `http://localhost:8000/auth/callback` to the **Authorized redirect URIs**.
+
+### Environment Variables
+Add the following to your `.env` file in the root:
+```env
+GOOGLE_CLIENT_ID=your_client_id
+GOOGLE_CLIENT_SECRET=your_client_secret
+REDIRECT_URI=http://localhost:8000/auth/callback
+```
 
 ## 🧪 Testing
 

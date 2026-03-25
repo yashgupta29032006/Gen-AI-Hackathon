@@ -43,3 +43,16 @@ class ExecutionLog(Base):
     action = Column(String)
     details = Column(JSON)
     timestamp = Column(DateTime(timezone=True), server_default=func.now())
+
+class OAuthToken(Base):
+    __tablename__ = "oauth_tokens"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_email = Column(String, unique=True, index=True)
+    token = Column(Text, nullable=False)  # JSON serialized token
+    refresh_token = Column(Text, nullable=True)
+    token_uri = Column(String, nullable=True)
+    client_id = Column(String, nullable=True)
+    client_secret = Column(String, nullable=True)
+    scopes = Column(Text, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())

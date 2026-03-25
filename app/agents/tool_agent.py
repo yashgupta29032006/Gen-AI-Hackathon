@@ -1,16 +1,30 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 from sqlalchemy.orm import Session
 from app.models.models import Task, Event, Note, ExecutionLog
 from app.db.session import SessionLocal
 from datetime import datetime
+from app.services.google_calendar import GoogleCalendarService
+from app.utils.oauth import load_token
 
 class ToolAgent:
     """
     Modular Tool Agent (MCP Style)
     Abstracts direct database and system calls for functional agents.
     """
-    def __init__(self):
+    def __init__(self, user_email: str = "default_user@example.com"):
         self.db = SessionLocal()
+        self.user_email = user_email
+        self._calendar_service = None
+
+    def _get_calendar_service(self) -> Optional[GoogleCalendarService]:
+        if self._calendar_service:
+            return self._calendar_service
+        
+        creds = load_token(self.db, self.user_email)
+        if creds:
+            self._calendar_service = GoogleCalendarService(creds)
+            return self._calendar_service
+        return None
 
     def create_task(self, title: str, description: str = None, due_date: str = None, priority: int = 1) -> Dict[str, Any]:
         due_dt = datetime.fromisoformat(due_date) if due_date else None
@@ -25,13 +39,21 @@ class ToolAgent:
         return [{"id": t.id, "title": t.title, "status": t.status, "due_date": str(t.due_date)} for t in tasks]
 
     def schedule_event(self, summary: str, start_time: str, end_time: str, description: str = None) -> Dict[str, Any]:
+        google_cal = self._get_calendar_service()
+        if google_cal:
+            try:
+                return google_cal.create_event(summary, start_time, end_time, description)
+            except Exception as e:
+                # Fallback to local DB if Google API fails
+                pass
+        
         start = datetime.fromisoformat(start_time)
         end = datetime.fromisoformat(end_time)
         new_event = Event(summary=summary, start_time=start, end_time=end, description=description)
         self.db.add(new_event)
         self.db.commit()
         self.db.refresh(new_event)
-        return {"id": new_event.id, "status": "scheduled", "summary": new_event.summary}
+        return {"id": new_event.id, "status": "scheduled_locally", "summary": new_event.summary}
 
     def save_note(self, content: str, tags: str = None) -> Dict[str, Any]:
         new_note = Note(content=content, tags=tags)

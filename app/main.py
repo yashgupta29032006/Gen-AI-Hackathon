@@ -1,4 +1,5 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
@@ -7,9 +8,22 @@ from app.db.base import Base
 from app.agents.orchestrator import OrchestratorAgent
 from app.core.workflow import WorkflowEngine
 from app.agents.tool_agent import ToolAgent
+from app.api.auth import router as auth_router
 import uvicorn
 
 app = FastAPI(title="FlowOS - Multi-Agent Productivity Brain")
+
+# CORS Configuration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Include routers
+app.include_router(auth_router)
 
 # Initialize database
 Base.metadata.create_all(bind=engine)
