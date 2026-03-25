@@ -15,7 +15,7 @@ CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 REDIRECT_URI = os.getenv("REDIRECT_URI", "http://localhost:8000/auth/callback")
 
-SCOPES = ["https://www.googleapis.com/auth/calendar.events"]
+SCOPES = ["https://www.googleapis.com/auth/calendar"]
 
 # Static verifier to bypass standard PKCE state issues in a stateless FastAPI backend
 # This ensures the verifier generated during login matches the one expected in the callback.
@@ -33,7 +33,7 @@ def get_google_auth_flow() -> Flow:
     }
     flow = Flow.from_client_config(
         client_config,
-        scopes=["https://www.googleapis.com/auth/calendar.events"],
+        scopes=SCOPES,
         redirect_uri=REDIRECT_URI
     )
     # Set a fixed verifier to disable dynamic PKCE generation/loss

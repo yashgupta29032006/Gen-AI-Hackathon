@@ -33,15 +33,53 @@ export const ExecutionTrace: React.FC<TraceProps> = ({ plan, actionsTaken, logs 
           <CheckCircle2 size={20} />
           <h2 className="text-lg font-semibold">Actions Taken</h2>
         </div>
-        <div className="space-y-3">
-          {actionsTaken.map((action, idx) => (
-            <div key={idx} className="bg-slate-800/50 p-3 rounded-lg border border-slate-700">
-              <span className="text-xs font-bold text-slate-500 uppercase">{action.agent}</span>
-              <p className="text-sm text-slate-200 mt-1">{action.action}</p>
-              {action.result && <pre className="text-[10px] text-slate-400 mt-2 bg-black/30 p-2 rounded truncate">{JSON.stringify(action.result, null, 2)}</pre>}
+        <div className="space-y-4">
+          {actionsTaken.map((action, idx) => {
+            // Debug check for the action object
+            if (!action || typeof action !== 'object') return null;
+            
+            return (
+              <div key={idx} className="bg-slate-800/80 p-4 rounded-xl border border-green-500/20 shadow-lg">
+                <div className="flex justify-between items-start mb-2">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-black text-green-400 uppercase tracking-tighter">
+                      {action.agent || 'AGENT'}
+                    </span>
+                    <h3 className="text-sm font-bold text-slate-100 uppercase">
+                      {action.action || 'EXECUTING...'}
+                    </h3>
+                  </div>
+                  <div className="bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full text-[9px] font-black tracking-widest border border-green-500/30">
+                    DONE
+                  </div>
+                </div>
+                
+                {action.result ? (
+                  <div className="mt-3 bg-black/60 rounded-lg p-3 border border-slate-700/50 group">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Action Result</span>
+                      <span className="text-[9px] text-green-500/50 font-mono">SUCCESS</span>
+                    </div>
+                    <pre className="text-[10px] text-slate-300 font-mono overflow-x-auto max-h-32 scrollbar-thin scrollbar-thumb-slate-800">
+                      {JSON.stringify(action.result, null, 2)}
+                    </pre>
+                  </div>
+                ) : action.error ? (
+                  <div className="mt-3 bg-red-500/10 rounded-lg p-3 border border-red-500/20">
+                    <p className="text-[10px] text-red-400 font-mono">{action.error}</p>
+                  </div>
+                ) : (
+                  <p className="text-[10px] text-slate-500 mt-2 italic font-medium">Task completed with no return data.</p>
+                )}
+              </div>
+            );
+          })}
+          {actionsTaken.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-8 text-slate-600">
+              <CheckCircle2 size={32} className="opacity-20 mb-2" />
+              <p className="italic text-xs font-semibold uppercase tracking-widest opacity-40">Ready for Mission</p>
             </div>
-          ))}
-          {actionsTaken.length === 0 && <p className="text-slate-500 italic text-sm">Waiting for execution...</p>}
+          )}
         </div>
       </div>
 

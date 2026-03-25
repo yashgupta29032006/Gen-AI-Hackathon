@@ -8,7 +8,9 @@ class SchedulerAgent(BaseAgent):
         self.tools = ToolAgent()
 
     async def execute(self, action: str, params: Dict[str, Any]) -> Dict[str, Any]:
+        print(f"[DEBUG] SchedulerAgent received action: {action}")
         if action == "schedule_event":
+            print(f"[DEBUG] Delegating to ToolAgent.schedule_event...")
             return self.tools.schedule_event(**params)
         else:
             prompt = f"Suggest a schedule for '{action}' with context {params}."

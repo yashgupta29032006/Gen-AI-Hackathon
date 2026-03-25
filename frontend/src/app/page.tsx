@@ -45,6 +45,7 @@ export default function Home() {
       // Step 2: Auto-execute for demo
       if (planData.plan && planData.plan.length > 0) {
         const result = await apiService.execute(planData.plan);
+        console.log("[DEBUG] Execution result from backend:", result);
         setActionsTaken(result.actions_taken || []);
       }
     } catch (err: any) {

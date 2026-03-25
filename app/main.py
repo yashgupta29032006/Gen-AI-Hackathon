@@ -18,13 +18,22 @@ load_dotenv()
 
 # For local development with HTTP/Google OAuth
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
 
 app = FastAPI(title="FlowOS - Multi-Agent Productivity Brain")
 
 # CORS Configuration
+origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:3001",
+    "http://127.0.0.1:3001",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Allow all for local development/port variability
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:3001", "http://127.0.0.1:3001"],
+    allow_origin_regex="http://(localhost|127\.0\.0\.1)(:[0-9]+)?",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -68,21 +77,27 @@ async def ask_orchestrator(query: Query):
 async def execute_workflow(request: ExecutionRequest):
     engine = WorkflowEngine()
     orchestrator = OrchestratorAgent()
-    
     actions_taken = []
     
+    print(f"[EXECUTION] Received request to execute {len(request.plan)} steps.")
     for step in request.plan:
         agent_key = step.get("agent")
         action = step.get("action")
         params = step.get("params", {})
         
+        print(f"[EXECUTION] Processing step: {agent_key} -> {action} with params {params}")
+        
         agent = orchestrator.sub_agents.get(agent_key)
         if not agent:
+            print(f"[EXECUTION] ERROR: Agent {agent_key} not found in orchestrator mapping.")
             actions_taken.append({"error": f"Agent {agent_key} not found"})
             continue
             
         try:
+            print(f"[EXECUTION] Calling {agent_key}.execute()...")
             result = await agent.execute(action, params)
+            print(f"[EXECUTION] Step completed with result: {result}")
+            
             actions_taken.append({
                 "agent": agent_key,
                 "action": action,
@@ -90,9 +105,11 @@ async def execute_workflow(request: ExecutionRequest):
             })
             engine.log_action(agent_key, action, result)
         except Exception as e:
+            print(f"[EXECUTION ERROR] Exception during {agent_key}.{action}: {str(e)}")
             actions_taken.append({"error": str(e)})
 
     engine.close()
+    print(f"[EXECUTION] Finished. Returning {len(actions_taken)} results.")
     return {
         "status": "completed",
         "actions_taken": actions_taken

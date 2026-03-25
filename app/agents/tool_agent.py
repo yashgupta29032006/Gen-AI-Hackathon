@@ -20,10 +20,13 @@ class ToolAgent:
         if self._calendar_service:
             return self._calendar_service
         
+        print(f"[DEBUG] Loading OAuth token for {self.user_email}...")
         creds = load_token(self.db, self.user_email)
         if creds:
+            print(f"[DEBUG] Credentials found: {creds.token[:10]}...")
             self._calendar_service = GoogleCalendarService(creds)
             return self._calendar_service
+        print("[DEBUG] No credentials found for Google Calendar.")
         return None
 
     def create_task(self, title: str, description: str = None, due_date: str = None, priority: int = 1) -> Dict[str, Any]:
@@ -39,13 +42,16 @@ class ToolAgent:
         return [{"id": t.id, "title": t.title, "status": t.status, "due_date": str(t.due_date)} for t in tasks]
 
     def schedule_event(self, summary: str, start_time: str, end_time: str, description: str = None) -> Dict[str, Any]:
+        print(f"[DEBUG] ToolAgent.schedule_event called for: {summary}")
         google_cal = self._get_calendar_service()
         if google_cal:
+            print("[DEBUG] Google Calendar service initialized. Calling create_event...")
             try:
                 return google_cal.create_event(summary, start_time, end_time, description)
             except Exception as e:
-                # Fallback to local DB if Google API fails
-                pass
+                print(f"[ToolAgent] Google Calendar creation failed: {str(e)}")
+                # Re-raise to ensure the orchestrator/user knows it failed on Google
+                raise e
         
         start = datetime.fromisoformat(start_time)
         end = datetime.fromisoformat(end_time)

@@ -8,15 +8,14 @@ from app.utils.oauth import get_google_auth_flow, save_token
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.get("/login")
-def login():
-    try:
-        print("[OAuth] Login initiated...")
-        flow = get_google_auth_flow()
-        authorization_url, state = flow.authorization_url(access_type='offline', include_granted_scopes='true')
-        return {"url": authorization_url}
-    except Exception as e:
-        print(f"[OAuth] Login error: {str(e)}")
-        return {"error": "Failed to initialize OAuth flow", "details": str(e)}
+async def login():
+    flow = get_google_auth_flow()
+    # Request offline access and force consent to ensure we get a refresh_token
+    authorization_url, _ = flow.authorization_url(
+        access_type='offline',
+        prompt='consent'
+    )
+    return {"url": authorization_url}
 
 @router.get("/callback")
 def callback(request: Request, db: Session = Depends(get_db)):

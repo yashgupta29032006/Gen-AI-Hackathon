@@ -13,21 +13,37 @@ class GoogleCalendarService:
         Expects ISO format strings for start_time and end_time.
         """
         try:
-            print(f"[Calendar] Attempting to create event: {summary} at {start_time}")
-            event = {
+            print(f"[Calendar] Creating event with summary: {summary}")
+            print(f"[Calendar] Start: {start_time}, End: {end_time}")
+            
+            # Using Asia/Kolkata as requested by the user
+            event_body = {
                 'summary': summary,
                 'description': description,
                 'start': {
                     'dateTime': start_time,
-                    'timeZone': 'UTC',
+                    'timeZone': 'Asia/Kolkata',
                 },
                 'end': {
                     'dateTime': end_time,
-                    'timeZone': 'UTC',
+                    'timeZone': 'Asia/Kolkata',
                 },
             }
 
-            created_event = self.service.events().insert(calendarId='primary', body=event).execute()
+            print(f"[Calendar] Request Body: {event_body}")
+            
+            # Execute the real API call
+            created_event = self.service.events().insert(
+                calendarId='primary', 
+                body=event_body
+            ).execute()
+            
+            print(f"[Calendar] Full API Response: {created_event}")
+            
+            if not created_event.get("id"):
+                print("[Calendar] ERROR: No ID returned from Google API!")
+                raise Exception("Google API returned success but no event ID.")
+
             print(f"[Calendar] Event created successfully: {created_event.get('htmlLink')}")
             return {
                 "id": created_event.get("id"),
@@ -35,5 +51,8 @@ class GoogleCalendarService:
                 "status": "created_on_google_calendar"
             }
         except Exception as e:
-            print(f"[Calendar] Error creating event: {str(e)}")
+            print(f"[Calendar ERROR]: {str(e)}")
+            # Log full details if it's an HttpError
+            if hasattr(e, 'content'):
+                print(f"[Calendar ERROR Details]: {e.content.decode()}")
             raise e
