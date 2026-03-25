@@ -18,10 +18,16 @@ class OrchestratorAgent(BaseAgent):
         1. Parse input to identify goal and plan.
         2. Return a structured plan.
         """
+        from datetime import datetime
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
         system_instruction = (
             "You are the Primary Orchestrator for FlowOS. "
+            f"Current system time: {now}. "
             "Your goal is to break down user input into a sequence of executable steps. "
             "Available agents: task, scheduler, notes. "
+            "CRITICAL: All dates and times MUST be in ISO 8601 format (YYYY-MM-DDTHH:MM:SS)."
+            "\n"
             "Available actions: "
             "- task: create_task(title, description, due_date, priority), list_tasks() "
             "- scheduler: schedule_event(summary, start_time, end_time, description) "
