@@ -61,5 +61,3 @@ Run tests using pytest:
 pytest tests/
 ```
 
-## 📄 License
-MIT
